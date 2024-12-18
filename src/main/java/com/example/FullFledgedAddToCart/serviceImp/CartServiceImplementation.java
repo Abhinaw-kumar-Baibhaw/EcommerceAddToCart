@@ -27,8 +27,13 @@ public class CartServiceImplementation implements CartService {
     }
 
     @Override
-    public CartProduct removeProductFromCart(Long cartId, Long productId) {
-        return null;
+    public Optional<CartProduct> removeProductFromCart(Long cartId) {
+        Optional<CartProduct> cartId1 = cartRepo.findById(cartId);
+        if(cartId1.isPresent()){
+            CartProduct cartProduct1 = cartId1.get();
+            cartRepo.deleteById(cartProduct1.getCartId());
+        }
+        return cartId1;
     }
 
     @Override
@@ -37,13 +42,13 @@ public class CartServiceImplementation implements CartService {
     }
 
     @Override
-    public Optional<CartProduct> getCartForUser(Long userId) {
+    public Optional<CartProduct> getCartForUser(Long userId, Product product) {
         Optional<CartProduct> byId = cartRepo.findById(userId);
         if(byId.isPresent()){
             CartProduct cartProduct = byId.get();
-            String uri = "http://FULLFLEDGEDPRODUCTPART/products/getUserProducts/"+userId;
-            Product[] product = restTemplate.getForObject(uri, Product[].class);
-            List<Product> list = Arrays.asList(product);
+            String uri = "http://FULLFLEDGEDPRODUCTPART/products/getUserProducts/"+cartProduct.getUserId();
+            Product[] product1 = restTemplate.getForObject(uri, Product[].class);
+            List<Product> list = Arrays.asList(product1);
             cartProduct.setProductList(list);
             return Optional.of(cartProduct);
         }
